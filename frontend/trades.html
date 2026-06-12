@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Central de trocas — proponha e aceite trocas de figurinhas com outros colecionadores em tempo real.">
+    <title>Trocas — Álbum de Figurinhas Virtual</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+</head>
+
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="page-container">
+        <!-- Header -->
+        <div class="header-bar" id="header-bar">
+            <div class="header-user">
+                <div class="header-avatar">...</div>
+                <div>
+                    <div class="header-greeting">Carregando...</div>
+                    <div class="header-name"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Title -->
+        <h1 class="page-title">Central de Trocas</h1>
+        <p class="page-subtitle" id="realtime-indicator">Conectando...</p>
+
+        <!-- Loader -->
+        <div class="page-loader" id="page-loader">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Content -->
+        <div id="trades-content" style="display:none;">
+            <!-- New Trade Button -->
+            <div style="margin-bottom:20px;">
+                <button class="btn btn-gold btn-full" id="new-trade-btn" style="font-size:1rem; padding:16px;">
+                    🔄 Propor Nova Troca
+                </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="available">Disponíveis</button>
+                <button class="tab" data-tab="mine">Minhas Propostas</button>
+                <button class="tab" data-tab="history">Histórico</button>
+            </div>
+
+            <!-- Trades List -->
+            <div id="trades-list"></div>
+        </div>
+    </div>
+
+    <!-- New Trade Modal -->
+    <div class="modal-overlay" id="trade-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">🔄 Propor Troca</span>
+                <button class="btn btn-ghost btn-sm" id="modal-close-btn">✕</button>
+            </div>
+
+            <form id="trade-form">
+                <div class="form-group">
+                    <label class="form-label" for="offer-select">Sua figurinha repetida (oferece)</label>
+                    <select class="form-select" id="offer-select" required>
+                        <option value="">Selecione uma figurinha...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="wanted-select">Figurinha que você quer</label>
+                    <select class="form-select" id="wanted-select" required>
+                        <option value="">Selecione uma figurinha...</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px;">
+                    ✓ Criar Proposta
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="album.html" class="nav-item">
+            <span class="nav-icon">📖</span>
+            <span>Álbum</span>
+        </a>
+        <a href="duplicates.html" class="nav-item">
+            <span class="nav-icon">🔁</span>
+            <span>Repetidas</span>
+        </a>
+        <a href="trades.html" class="nav-item active">
+            <span class="nav-icon">🔄</span>
+            <span>Trocas</span>
+        </a>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/trades.js"></script>
+    <script>
+        // Renderiza o header com os dados do usuário logado
+        (async () => {
+            if (!tradeProfile) {
+                tradeProfile = await getCurrentProfile();
+            }
+            const headerEl = document.getElementById('header-bar');
+            if (headerEl && tradeProfile) {
+                const initial = (tradeProfile.username || 'U')[0].toUpperCase();
+                headerEl.innerHTML = `
+          <div class="header-user">
+            <div class="header-avatar">${initial}</div>
+            <div>
+              <div class="header-greeting">Bem-vindo de volta 👋</div>
+              <div class="header-name">${tradeProfile.username}</div>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-ghost btn-sm" onclick="logout()" title="Sair">🚪</button>
+          </div>
+        `;
+            }
+        })();
+    </script>
+</body>
+
+</html>
