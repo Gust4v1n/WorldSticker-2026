@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Crie sua conta no Álbum de Figurinhas Virtual e comece a colecionar!">
+  <title>Cadastro — Álbum de Figurinhas Virtual</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+</head>
+<body>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <div class="auth-container">
+    <div class="auth-logo">⚽</div>
+    <h1 class="auth-brand">Criar Conta</h1>
+    <p class="auth-tagline">Comece sua coleção agora!</p>
+
+    <div class="glass-card auth-card">
+      <h2>Cadastro</h2>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label class="form-label" for="username">Nome de Usuário</label>
+          <input 
+            class="form-input" 
+            type="text" 
+            id="username" 
+            placeholder="seu_username" 
+            required 
+            minlength="3"
+            maxlength="20"
+            pattern="[a-zA-Z0-9_]+"
+            title="Apenas letras, números e underscore"
+            autocomplete="username"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">E-mail</label>
+          <input 
+            class="form-input" 
+            type="email" 
+            id="email" 
+            placeholder="seu@email.com" 
+            required 
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Senha</label>
+          <input 
+            class="form-input" 
+            type="password" 
+            id="password" 
+            placeholder="Mínimo 6 caracteres" 
+            required 
+            minlength="6"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">Confirmar Senha</label>
+          <input 
+            class="form-input" 
+            type="password" 
+            id="confirm-password" 
+            placeholder="Repita a senha" 
+            required 
+            minlength="6"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="register-btn" style="margin-top:8px;">
+          ✨ Criar Conta
+        </button>
+      </form>
+
+      <p style="text-align:center; margin-top:20px; font-size:0.875rem; color:var(--color-text-secondary);">
+        Já tem conta? 
+        <a href="index.html" style="font-weight:600;">Fazer login</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Redirecionar se já logado
+    redirectIfLoggedIn();
+
+    // Form de cadastro
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('register-btn');
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      // Validações
+      if (password !== confirmPassword) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast error';
+        toast.innerHTML = '<span class="toast-icon">❌</span><span>As senhas não coincidem</span>';
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Criando conta...';
+
+      try {
+        await register(email, password, username);
+        
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast success';
+        toast.innerHTML = '<span class="toast-icon">✅</span><span>Conta criada com sucesso! Redirecionando...</span>';
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          window.location.href = 'album.html';
+        }, 1500);
+      } catch (error) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast error';
+        toast.innerHTML = '<span class="toast-icon">❌</span><span>' + (error.message || 'Erro ao criar conta') + '</span>';
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+
+        btn.disabled = false;
+        btn.textContent = '✨ Criar Conta';
+      }
+    });
+  </script>
+</body>
+</html>

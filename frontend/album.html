@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Seu álbum de figurinhas virtual — colecione jogadores, abra pacotinhos e complete a coleção!">
+  <title>Meu Álbum — Álbum de Figurinhas Virtual</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+</head>
+<body>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Pack Opening Overlay -->
+  <div class="pack-overlay" id="pack-overlay">
+    <div class="pack-title">🎉 Pacotinho Aberto!</div>
+    <div class="pack-stickers" id="pack-stickers"></div>
+    <button class="btn btn-ghost pack-close-btn" onclick="closePackReveal()">Fechar</button>
+  </div>
+
+  <div class="page-container">
+    <!-- Header -->
+    <div class="header-bar" id="header-bar">
+      <div class="header-user">
+        <div class="header-avatar">...</div>
+        <div>
+          <div class="header-greeting">Carregando...</div>
+          <div class="header-name"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Title -->
+    <h1 class="page-title">Meu Álbum</h1>
+    <p class="page-subtitle">Colecione todas as figurinhas!</p>
+
+    <!-- Loader -->
+    <div class="page-loader" id="page-loader">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Content -->
+    <div id="album-content" style="display:none;">
+      <!-- Stats -->
+      <div class="stats-row" id="stats-row"></div>
+
+      <!-- Progress -->
+      <div class="progress-container" id="progress-container"></div>
+
+      <!-- Open Pack Button -->
+      <div style="margin-bottom:24px;">
+        <button class="btn btn-gold btn-full" id="open-pack-btn" style="font-size:1rem; padding:16px;">
+          📦 Abrir Pacotinho
+        </button>
+      </div>
+
+      <!-- Sticker Grid -->
+      <h2 class="section-title">Figurinhas</h2>
+      <div class="sticker-grid" id="sticker-grid"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="album.html" class="nav-item active">
+      <span class="nav-icon">📖</span>
+      <span>Álbum</span>
+    </a>
+    <a href="duplicates.html" class="nav-item">
+      <span class="nav-icon">🔁</span>
+      <span>Repetidas</span>
+    </a>
+    <a href="trades.html" class="nav-item">
+      <span class="nav-icon">🔄</span>
+      <span>Trocas</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/album.js"></script>
+</body>
+</html>
