@@ -50,28 +50,11 @@ async function loadTradesData() {
 }
 
 /**
- * Configura Realtime para atualizações instantâneas
+ * Configura Realtime para atualizações (Removido por segurança, o backend não está expondo web sockets por enquanto)
  */
 function setupRealtimeSubscription() {
-  realtimeChannel = supabase
-    .channel('trades-realtime')
-    .on('postgres_changes',
-      { event: '*', schema: 'public', table: 'trades' },
-      (payload) => {
-        console.log('Realtime update:', payload);
-        handleRealtimeUpdate(payload);
-      }
-    )
-    .subscribe((status) => {
-      const indicator = document.getElementById('realtime-indicator');
-      if (indicator) {
-        if (status === 'SUBSCRIBED') {
-          indicator.innerHTML = '<span style="color:var(--color-success);">● Ao vivo</span>';
-        } else {
-          indicator.innerHTML = '<span style="color:var(--color-gold);">● Conectando...</span>';
-        }
-      }
-    });
+  // Realtime direto via Supabase foi removido.
+  // Atualizações de estado agora acontecem na ação do usuário ou reload.
 }
 
 /**
@@ -390,9 +373,4 @@ function showTradeToast(message, type = 'info') {
   setTimeout(() => toast.remove(), 4000);
 }
 
-// Cleanup ao sair da página
-window.addEventListener('beforeunload', () => {
-  if (realtimeChannel) {
-    supabase.removeChannel(realtimeChannel);
-  }
-});
+// Cleanup ao sair da página (realtime removido)

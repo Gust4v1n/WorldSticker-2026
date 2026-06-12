@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const supabase = require('../services/supabase');
+const { supabaseDb: supabase } = require('../services/supabase');
 const authMiddleware = require('../middleware/auth');
 
 // Todas as rotas são protegidas
@@ -9,6 +9,8 @@ router.use(authMiddleware);
 // GET /api/user-stickers — Listar coleção do usuário autenticado
 router.get('/', async (req, res) => {
   try {
+    console.log(`📋 GET /user-stickers — userId: ${req.userId}`);
+
     const { data, error } = await supabase
       .from('user_stickers')
       .select(`
@@ -18,7 +20,12 @@ router.get('/', async (req, res) => {
       .eq('user_id', req.userId)
       .order('sticker_id', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Erro na query user_stickers:', error);
+      throw error;
+    }
+
+    console.log(`✅ user_stickers retornou ${data ? data.length : 0} registros para userId: ${req.userId}`);
     res.json(data);
   } catch (err) {
     console.error('Erro ao listar coleção:', err);

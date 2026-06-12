@@ -1,96 +1,87 @@
 // =============================================
-// Autenticação — Login, Cadastro, Logout
+// Autenticação — Login, Cadastro, Logout (via Backend)
 // =============================================
 
 /**
  * Verifica se o usuário está autenticado e redireciona se necessário
  */
 async function checkAuth(redirectTo = 'index.html') {
-  const { data } = await supabase.auth.getSession();
+  const token = localStorage.getItem('token');
 
-  if (!data.session) {
+  if (!token) {
     window.location.href = redirectTo;
     return null;
   }
 
-  return data.session.user;
+  try {
+    const profile = await getCurrentProfile();
+    if (!profile) throw new Error('Sessão expirada');
+    return profile;
+  } catch (error) {
+    localStorage.removeItem('token');
+    window.location.href = redirectTo;
+    return null;
+  }
 }
 
 /**
  * Verifica se já está logado (para páginas de login/registro)
  */
 async function redirectIfLoggedIn(redirectTo = 'album.html') {
-  const { data } = await supabase.auth.getSession();
-
-  if (data.session) {
+  const token = localStorage.getItem('token');
+  if (token) {
     window.location.href = redirectTo;
   }
 }
 
 /**
- * Login com email e senha
+ * Login com email e senha via backend
  */
 async function login(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
   });
 
-  if (error) throw error;
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'Erro no login');
+
+  localStorage.setItem('token', data.token);
   return data;
 }
 
 /**
- * Cadastro com email, senha e username
+ * Cadastro com email, senha e username via backend
  */
 async function register(email, password, username) {
-  // 1. Criar conta no Supabase Auth
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, username })
   });
 
-  if (error) throw error;
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'Erro no cadastro');
 
-  // 2. Criar perfil na tabela profiles
-  if (data.user) {
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert([{
-        id: data.user.id,
-        username: username,
-      }]);
-
-    if (profileError) {
-      console.error('Erro ao criar perfil:', profileError);
-      throw profileError;
-    }
+  // O backend agora retorna o token logo após o cadastro
+  if (data.token) {
+    localStorage.setItem('token', data.token);
   }
-
   return data;
 }
 
 /**
  * Logout
  */
-async function logout() {
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+function logout() {
+  localStorage.removeItem('token');
   window.location.href = 'index.html';
 }
 
 /**
- * Retorna dados do perfil do usuário atual
+ * Retorna dados do perfil do usuário atual via backend
  */
 async function getCurrentProfile() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  return profile;
+  return await apiRequest('/auth/me');
 }

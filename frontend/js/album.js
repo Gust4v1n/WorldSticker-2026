@@ -7,10 +7,10 @@ let userStickers = [];
 let currentProfile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const user = await checkAuth();
-  if (!user) return;
+  const profile = await checkAuth();
+  if (!profile) return;
 
-  currentProfile = await getCurrentProfile();
+  currentProfile = profile;
   renderHeader();
   await loadAlbumData();
   setupOpenPackButton();

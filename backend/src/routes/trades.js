@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const supabase = require('../services/supabase');
+const { supabaseDb: supabase } = require('../services/supabase');
 const authMiddleware = require('../middleware/auth');
 
 // Todas as rotas são protegidas

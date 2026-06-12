@@ -2,32 +2,35 @@
 // API Wrapper — Chamadas ao Backend Express
 // =============================================
 
-// Em produção (Vercel), usa URL relativa. Em dev local, usa localhost:3001
-const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:3001/api' 
-  : '/api';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '';
+const API_BASE_URL = isLocal ? 'http://localhost:3001/api' : '/api';
 
 /**
- * Retorna o token JWT do usuário autenticado no Supabase
+ * Retorna o token JWT do usuário autenticado a partir do localStorage
  */
-async function getAuthToken() {
-  const { data } = await supabase.auth.getSession();
-  return data?.session?.access_token || null;
+function getAuthToken() {
+  return localStorage.getItem('token');
 }
 
 /**
  * Faz uma requisição autenticada ao backend
  */
 async function apiRequest(endpoint, options = {}) {
-  const token = await getAuthToken();
+  const token = getAuthToken();
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers || {}),
+  };
+
+  // Remover headers do options para evitar duplicação
+  const { headers: _, ...restOptions } = options;
 
   const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-    ...options,
+    ...restOptions,
+    headers,
+    cache: 'no-store',
   };
 
   try {

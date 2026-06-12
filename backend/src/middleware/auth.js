@@ -1,4 +1,4 @@
-const supabase = require('../services/supabase');
+const { supabaseDb } = require('../services/supabase');
 
 /**
  * Middleware de autenticação
@@ -15,9 +15,11 @@ async function authMiddleware(req, res, next) {
 
     const token = authHeader.split(' ')[1];
 
-    const { data, error } = await supabase.auth.getUser(token);
+    // Usa supabaseDb (service role) para verificar o token
+    const { data, error } = await supabaseDb.auth.getUser(token);
 
     if (error || !data.user) {
+      console.error('❌ Token inválido:', error?.message);
       return res.status(401).json({ error: 'Token inválido ou expirado' });
     }
 
