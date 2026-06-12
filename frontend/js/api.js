@@ -2,7 +2,10 @@
 // API Wrapper — Chamadas ao Backend Express
 // =============================================
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Em produção (Vercel), usa URL relativa. Em dev local, usa localhost:3001
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001/api' 
+  : '/api';
 
 /**
  * Retorna o token JWT do usuário autenticado no Supabase

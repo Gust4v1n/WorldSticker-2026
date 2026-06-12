@@ -1,0 +1,12 @@
+{
+  "name": "worldsticker-2026",
+  "version": "1.0.0",
+  "description": "Álbum de Figurinhas Virtual — WorldSticker 2026",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0"
+  }
+}
